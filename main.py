@@ -35,6 +35,8 @@ class ZipUtilities:
                 print('--->Entering folder: ' + str(full_path))
                 self.addFolderToZip(zip_file, full_path)
 
+    # Function to avoid directory structure when zipping
+    # See https://stackoverflow.com/questions/27991745/zip-file-and-avoid-directory-structure
     def zipFileArcName(self,full_name,parent_dir):
         return full_name.replace(parent_dir,'')
 
