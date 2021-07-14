@@ -8,10 +8,16 @@ import zipfile
 from pathlib import Path
 
 class ZipUtilities:
+    def __init__(self):
+        self.originalpath =''
+
     def toZip(self, filetozip, zipfilename):
-        zip_file = zipfile.ZipFile(zipfilename, 'w')
+        zip_file = zipfile.ZipFile(zipfilename, 'w', zipfile.ZIP_DEFLATED)
+        self.originalpath = filetozip
+
         if os.path.isfile(filetozip):
             print('Selected file zipped: ' + str(zipfilename))
+            #>>>>>>>     INSERT SHORT PATH HERE     <<<<<<<<       
             zip_file.write(filetozip)
         else:
             print('Root directory:')
@@ -23,10 +29,16 @@ class ZipUtilities:
             full_path = os.path.join(foldertozip, file)
             if os.path.isfile(full_path):
                  print('+File added: ' + str(full_path))
-                 zip_file.write(full_path)
+
+                 short_path= self.zipFileArcName(full_path,self.originalpath)
+
+                 zip_file.write(full_path, arcname= short_path)
             elif os.path.isdir(full_path):
                 print('--->Entering folder: ' + str(full_path))
                 self.addFolderToZip(zip_file, full_path)
+
+    def zipFileArcName(self,full_name,parent_dir):
+        return full_name.replace(parent_dir,'')
 
 # Source: https://stackoverflow.com/questions/13852700/create-file-but-if-name-exists-add-number
 def uniquify(path):
@@ -41,7 +53,7 @@ def uniquify(path):
 
 def main():
     DEFAULT_BACKUP_PATH = r'c:/_baks'
-    DEFAULT_INPUT_PATH = r'C:/_filesToZip' #r'' (raw string) indicate that special characters should not be evaluated
+    DEFAULT_INPUT_PATH = r'c:/_filesToZip' #r'' (raw string) indicate that special characters should not be evaluated
 
     BACKUP_PATH = input('Write destination path. If empty, default path "{}" will be considered: '.format(DEFAULT_BACKUP_PATH))
     INPUT_PATH = input('Write path to zip. If empty, default path "{}" will be considered: '.format(DEFAULT_INPUT_PATH))
