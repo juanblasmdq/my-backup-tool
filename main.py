@@ -9,16 +9,16 @@ from pathlib import Path
 
 class ZipUtilities:
     def __init__(self):
-        self.originalpath =''
+        self.originalpath ='' # Variable to be used by all class functions
 
+    # Function to call from main. Runs only (1) time, i.i. toZip is 'non-recursive'. Other functions in class ZipUtilities are recursive
     def toZip(self, filetozip, zipfilename):
         zip_file = zipfile.ZipFile(zipfilename, 'w', zipfile.ZIP_DEFLATED)
         self.originalpath = filetozip
-
         if os.path.isfile(filetozip):
             print('Selected file zipped: ' + str(zipfilename))
-            #>>>>>>>     INSERT SHORT PATH HERE     <<<<<<<<       
-            zip_file.write(filetozip)
+            short_path= self.zipFileArcName(filetozip,str(Path(filetozip).parent))     
+            zip_file.write(filetozip, arcname= short_path)
         else:
             print('Root directory:')
             self.addFolderToZip(zip_file, filetozip)
@@ -29,9 +29,7 @@ class ZipUtilities:
             full_path = os.path.join(foldertozip, file)
             if os.path.isfile(full_path):
                  print('+File added: ' + str(full_path))
-
                  short_path= self.zipFileArcName(full_path,self.originalpath)
-
                  zip_file.write(full_path, arcname= short_path)
             elif os.path.isdir(full_path):
                 print('--->Entering folder: ' + str(full_path))
@@ -44,19 +42,17 @@ class ZipUtilities:
 def uniquify(path):
     filename, extension = os.path.splitext(path)
     counter = 2
-
     while os.path.exists(path):
         path = filename + " (" + str(counter) + ")" + extension
         counter += 1
-
     return path
 
 def main():
     DEFAULT_BACKUP_PATH = r'c:/_baks'
-    DEFAULT_INPUT_PATH = r'c:/_filesToZip' #r'' (raw string) indicate that special characters should not be evaluated
+    DEFAULT_INPUT_PATH = r'c:/_filesToZip' # r'' (raw string) indicate that special characters as \U should not be evaluated
 
     BACKUP_PATH = input('Write destination path. If empty, default path "{}" will be considered: '.format(DEFAULT_BACKUP_PATH))
-    INPUT_PATH = input('Write path to zip. If empty, default path "{}" will be considered: '.format(DEFAULT_INPUT_PATH))
+    INPUT_PATH = input('Write path to zip. If empty, default path "{}" will be considered: '.format(DEFAULT_INPUT_PATH)).strip('"')
 
     if not BACKUP_PATH:
         print('\n>> Using default destination path "{}"'.format(DEFAULT_BACKUP_PATH))
@@ -68,7 +64,7 @@ def main():
         input()
         INPUT_PATH = DEFAULT_INPUT_PATH
 
-    Path(BACKUP_PATH).mkdir(parents=True, exist_ok=True) #Make dir if not exist
+    Path(BACKUP_PATH).mkdir(parents=True, exist_ok=True) # Make dir if dir not exist
     folder_to_back = Path(INPUT_PATH).name
     date = datetime.now().strftime('%Y-%m-%d')
     back_name = '{}_BAK-{}'.format(folder_to_back,date)
