@@ -1,11 +1,18 @@
-# Created by JBC
-# July 13, 2021
+'''A python script to create a zip file containing all the files and folders of
+a selected path (either via CLI or config.ini file),
+in a user define backup folder
+
+Full code: https://github.com/juanblasmdq/my-backup-tool/'''
 
 import os
 from datetime import datetime
 from typing import TextIO
 import zipfile
 from pathlib import Path
+from configparser import ConfigParser
+
+__author__ = 'Juan Blas Carelli'
+__version__ = 'July 14, 2021'
 
 class ZipUtilities:
     def __init__(self):
@@ -49,34 +56,54 @@ def uniquify(path):
         counter += 1
     return path
 
+def get_config(lookup):
+    config = ConfigParser()
+    config.read('config.ini')
+    return config['paths to use']['{}'.format(lookup)]
+
 def main():
     DEFAULT_BACKUP_PATH = r'c:/_baks'
     DEFAULT_INPUT_PATH = r'c:/_filesToZip' # r'' (raw string) indicate that special characters as \U should not be evaluated
 
-    BACKUP_PATH = input('Write destination path. If empty, default path "{}" will be considered: '.format(DEFAULT_BACKUP_PATH))
-    INPUT_PATH = input('Write path to zip. If empty, default path "{}" will be considered: '.format(DEFAULT_INPUT_PATH)).strip('"')
+    use_config = input('Use information included in "config.ini"? [y=yes] (type anything if you don´t know what this means): ').lower()
 
-    if not BACKUP_PATH:
-        print('\n>> Using default destination path "{}"'.format(DEFAULT_BACKUP_PATH))
-        input()
-        BACKUP_PATH = DEFAULT_BACKUP_PATH
+    if use_config == 'y':
+        print('Using "config.ini". If any path is empty, default paths will be considered.')
+        BACKUP_PATH = get_config('BACKUP_PATH')
+        INPUT_PATH = get_config('INPUT_PATH')
+    else:
+        BACKUP_PATH = input('Write destination path. If empty, default path "{}" will be considered: '.format(DEFAULT_BACKUP_PATH))
+        INPUT_PATH = input('Write path to zip. If empty, default path "{}" will be considered: '.format(DEFAULT_INPUT_PATH)).strip('"')
+        if not BACKUP_PATH:
+            print('\n>> Using default destination path "{}"'.format(DEFAULT_BACKUP_PATH))
+            input()
+            BACKUP_PATH = DEFAULT_BACKUP_PATH
 
-    if not INPUT_PATH:
-        print('\n>> Using default path to zip "{}"'.format(DEFAULT_INPUT_PATH))
-        input()
-        INPUT_PATH = DEFAULT_INPUT_PATH
+        if not INPUT_PATH:
+            print('\n>> Using default path to zip "{}"'.format(DEFAULT_INPUT_PATH))
+            input()
+            INPUT_PATH = DEFAULT_INPUT_PATH
 
-    Path(BACKUP_PATH).mkdir(parents=True, exist_ok=True) # Make dir if dir not exist
-    folder_to_back = Path(INPUT_PATH).name
-    date = datetime.now().strftime('%Y-%m-%d')
-    back_name = '{}_BAK-{}'.format(folder_to_back,date)
-    back_full_name = '{}.zip'.format(os.sep.join([BACKUP_PATH,back_name]))
-    back_full_name = uniquify(back_full_name)
+    INPUT_PATH=INPUT_PATH.split(',')
+    for in_path in INPUT_PATH:
+        in_path = r'{}'.format(in_path).strip()
+        print('\n>> !WORKING ON PATH {}'.format(in_path))
+        Path(BACKUP_PATH).mkdir(parents=True, exist_ok=True) # Make dir if dir not exist
+        folder_to_back = Path(in_path).name
+        date = datetime.now().strftime('%Y-%m-%d')
+        back_name = '{}_BAK-{}'.format(folder_to_back,date)
+        back_full_name = '{}.zip'.format(os.sep.join([BACKUP_PATH,back_name]))
+        back_full_name = uniquify(back_full_name)
 
-    utilities = ZipUtilities()
-    utilities.toZip(INPUT_PATH, back_full_name)
+        utilities = ZipUtilities()
+        utilities.toZip(in_path, back_full_name)
 
-    print('\n>> Zip file created at "{}"'.format(BACKUP_PATH))
-    print('>> Zip full name == "{}"'.format(back_full_name))
+        print('\n>> Zip file created at "{}"'.format(BACKUP_PATH))
+        print('>> Zip full name == "{}"'.format(back_full_name))
+        
+        
+    print('\n>> END OF PROCESS. Press any key to exit')
+    input()
 
-main()
+if __name__ == '__main__':
+    main()
