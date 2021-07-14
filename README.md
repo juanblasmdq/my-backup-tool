@@ -1,0 +1,15 @@
+# My backup tool
+**A python script to create a zip file containing all the files and folders of a selected path (via CLI), in a user define backup folder**
+
+# Use:
+1. Download or clone code using either 'Download as ZIP' or wirting ```git clone https://github.com/juanblasmdq/my-backup-tool.git``` in a Terminal (requires to have Git installed and configured)
+2. Run script
+3. Define destination folder (backup folder) when asked
+4. Define path to zip when asked
+5. See results
+
+# How to install
+Download or clone code using either 'Download as ZIP' or wirting ```git clone https://github.com/juanblasmdq/my-backup-tool.git``` in a Terminal (requires to have Git installed and configured)
+
+# License
+Released under a ([MIT](LICENSE)) license
