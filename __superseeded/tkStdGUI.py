@@ -5,10 +5,7 @@ Use:
 2. Import module using 'import tkGUI'
 3. Generate a list of labels (i.e., lines to be filled-in)
 4. Call function 'tkGUI.ShowForm('Título de la ventana',label_list,'')' passing the required arguments
-   and assign that the result to any variable of your project (shall be a list!)
-
-Note: This script is part of Python project my-backup-tool
-Full code: https://github.com/juanblasmdq/my-backup-tool/'''
+   and assign that the result to any variable of your project (shall be a list!)'''
 
 import tkinter as tk
 import random

@@ -9,7 +9,7 @@ from datetime import datetime
 import zipfile
 from pathlib import Path
 from configparser import ConfigParser
-import bkTkGUI #project-specific module
+import TkGUI #project-specific-module TkGUI.py
 
 __copyright__   = 'My-backup-tool'
 __version__     = ''
