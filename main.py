@@ -9,20 +9,22 @@ from datetime import datetime
 import zipfile
 from pathlib import Path
 from configparser import ConfigParser
-import TkGUI #project-specific-module TkGUI.py
+
+import mainGUI #project-specific-module TkGUI.py
 
 __copyright__   = 'My-backup-tool'
-__version__     = ''
-__date__        = 'July 15, 2021'
+__version__     = 'beta'
+__date__        = 'July 16, 2021'
 __author__      = 'Juan Blas Carelli'
-__credits__     = ['Dakosaurio']
+__credits__     = 'Dakosaurio'
 __contact__     = 'https://github.com/juanblasmdq/my-backup-tool/'
 
 class ZipUtilities:
     def __init__(self):
         self.originalpath ='' # Variable to be used by all class functions
 
-    # Function to call from main. Runs only (1) time, i.i. toZip is 'non-recursive'. Other functions in class ZipUtilities are recursive
+    # Function to call from main. Runs only (1) time, i.e. toZip is 'non-recursive'.
+    #   Other functions in class ZipUtilities are (generally) recursive
     def toZip(self, filetozip, zipfilename):
         zip_file = zipfile.ZipFile(zipfilename, 'w', zipfile.ZIP_DEFLATED)
         self.originalpath = filetozip
@@ -73,105 +75,101 @@ def uniquify(path):
         counter += 1
     return path
 
-def get_config(lookup):
+def get_config(section, lookup):
     config = ConfigParser()
     config.read('config.ini')
-    return config['paths to use']['{}'.format(lookup)]
+    return config[section][lookup]
 
 def main():
-    #DEFAULTS
-    CLI = True #Defines whether or not the program runes using a Command-Line-Interface
-    DEFAULT_BACKUP_PATH = r'c:/_baks'
-    DEFAULT_INPUT_PATH = r'c:/_filesToZip' # r'' (raw string) indicate that special characters as \U should not be evaluated
-
-    if CLI:
-        use_config = input('Use information included in "config.ini"? [y=yes]: ').lower()
-    else:
-        #GIU magic here
-        use_config = 'no'
-        pass
-
-    if use_config == 'y':
-        BACKUP_PATH = get_config('BACKUP_PATH')
-        INPUT_PATH = get_config('INPUT_PATH')
-        if CLI: print('Using "config.ini". If any path is empty, default paths will be considered.')
-    else:
-        if CLI: BACKUP_PATH = input('Write destination path. If empty, default path "{}" will be considered: '.format(DEFAULT_BACKUP_PATH))
-        if CLI: INPUT_PATH = input('Write path to zip. If empty, default path "{}" will be considered: '.format(DEFAULT_INPUT_PATH)).strip('"')
-        if not CLI:
-            #GIU magic here
-            #GUI from bkTkGUI
-            #label_list = ['Destination path (empty=Default)','Path to zip (empty=Default)']
-            #logContent = ''
-            #GUI_extraction = bkTkGUI.ShowForm('Backup creator',label_list,'')       
-            #BACKUP_PATH = GUI_extraction[0]
-            #INPUT_PATH = GUI_extraction[1]
-            pass
-
-        
-    if not BACKUP_PATH:
-        BACKUP_PATH = DEFAULT_BACKUP_PATH
-        if CLI:
-            print('\n>> Using default destination path "{}"'.format(DEFAULT_BACKUP_PATH))
-            input()
-        if not CLI:
-            #logContent = logContent + '\n' + '>> Using default destination path "{}"'.format(DEFAULT_BACKUP_PATH)
-            # GUI_log.setLogValue(logContent)
-            # GUI_log.update_log()
-            #log.WriteToLog(logContent)
-            pass
-
-    if not INPUT_PATH:
-        INPUT_PATH = DEFAULT_INPUT_PATH
-        if CLI:
-            print('\n>> Using default path to zip "{}"'.format(DEFAULT_INPUT_PATH))
-        if not CLI:
-            #logContent = logContent + '\n' +'>> Using default path to zip "{}"'.format(DEFAULT_INPUT_PATH)
-            #print('\n>> Using default path to zip "{}"'.format(DEFAULT_INPUT_PATH))
-            #input()
-            pass
+    # Variable early assignment to avoid errors until GUI release. HOLD. Shall be removed later
+    INPUT_PATH = ''
+    BACKUP_PATH = ''
+    log = ''
+    msg= ''
+    # Get defaults from config.ini
+    CLI_USSAGE = get_config('DEFAULT', 'USE_CLI')
+    DEFAULT_BACKUP_PATH = get_config('DEFAULT', 'DEFAULT_BACKUP_PATH')
+    DEFAULT_INPUT_PATH = get_config('DEFAULT', 'DEFAULT_INPUT_PATH')
     
-    # *****************
-    #     MAIN LOOP    
-    # *****************
-    INPUT_PATH=INPUT_PATH.split(',')
-    for in_path in INPUT_PATH:
-        in_path = r'{}'.format(in_path).strip()
+    if CLI_USSAGE.upper() == "YES":
+        CLI = True
+    else:
+        CLI = False
+
+    # Use Command-Line-Interface for data entry
+    if CLI: 
+        use_config = input('\nUse information included in "config.ini"? [y=yes]: ').lower()
+        if use_config == 'y' or use_config == 'yes':
+            BACKUP_PATH = get_config('WORKING_PATHS','BACKUP_PATH')
+            INPUT_PATH = get_config('WORKING_PATHS','INPUT_PATH')
+            print('\n>> Using "config.ini". If any path is empty, default paths will be considered.')
+        else:
+            BACKUP_PATH = input('Write destination path. If empty, default path "{}" will be considered: '.format(DEFAULT_BACKUP_PATH))
+            INPUT_PATH = input('Write path to zip. If empty, default path "{}" will be considered: '.format(DEFAULT_INPUT_PATH)).strip('"')
+        # Verification if paths are null
+        if not BACKUP_PATH:
+            BACKUP_PATH = DEFAULT_BACKUP_PATH
+            print('\n>> Backup path was empty. Using default destination path "{}"'.format(DEFAULT_BACKUP_PATH))
+
+        if not INPUT_PATH:
+            INPUT_PATH = DEFAULT_INPUT_PATH
+            print('\n>> Path to zip was empty. Using default path to zip "{}"'.format(DEFAULT_INPUT_PATH))
+
+    # Use Graphical user interface for data entry
+    else: 
+        use_config = 'no'
+        # HOLD
+        # Run GUI here
+        # GUI shall catch all values and return them to continue the script
+        pass 
+    
+    # ****************************
+    #     MAIN LOOP EXECUTION     
+    # ****************************
+    INPUT_PATH=INPUT_PATH.split(',') # In case multiple inputs where entried
+    for pth in INPUT_PATH:
+        pth = r'{}'.format(pth).strip()
+        msg = '\n>> !WORKING ON PATH {}'.format(pth)
 
         if CLI:
-            print('\n>> !WORKING ON PATH {}'.format(in_path))
+            print(msg)
         else:
-            #logContent = logContent + '\n' +'>> !WORKING ON PATH {}'.format(in_path)
+            log = log + '\n' + msg
+            #HOLD. Update log in the GUI
             pass
+        
+        # Make dir BACKUP_PATH if not exist
+        Path(BACKUP_PATH).mkdir(parents=True, exist_ok=True)
 
-        Path(BACKUP_PATH).mkdir(parents=True, exist_ok=True) # Make dir if dir not exist
-        folder_to_back = Path(in_path).name
-        date = datetime.now().strftime('%Y-%m-%d')
-        back_name = '{}_BAK-{}'.format(folder_to_back,date)
+        # Get name of path to backup
+        pth_to_back = Path(pth).name
+        currDate = datetime.now().strftime('%Y-%m-%d')
+        back_name = '{}_BAK-{}'.format(pth_to_back,currDate)
         back_full_name = '{}.zip'.format(os.sep.join([BACKUP_PATH,back_name]))
-        back_full_name = uniquify(back_full_name)
-
+        back_full_name = uniquify(back_full_name) # In case name exist
+        
         #Call zip creation
         utilities = ZipUtilities()
-        utilities.toZip(in_path, back_full_name)
+        utilities.toZip(pth, back_full_name)
 
+        msg = ('\n>> Zip file created at "{}"'.format(BACKUP_PATH) + 
+                '\n>> Zip full name == "{}"'.format(back_full_name))
+        
         if CLI:
-            print('\n>> Zip file created at "{}"'.format(BACKUP_PATH))
-            print('>> Zip full name == "{}"'.format(back_full_name))
+            print(msg)
         else:
-            #logContent = logContent + '\n' +'>> Zip file created at "{}"'.format(BACKUP_PATH)
-            #logContent = logContent + '\n' +n'>> Zip full name == "{}"'.format(back_full_name)
+            log = log + '\n' + msg
+            #HOLD. Update log in the GUI
             pass
+    
+    #End of main loop. Write end msg
+    msg = '\n>> END OF PROCESS!. You can exit now'
 
     if CLI:
-        print('\n>> END OF PROCESS. Press any key to exit')
-        input()
+        print(msg)
     else:
-        #logContent = str(logContent + '\n' +'>> END OF PROCESS. Close window to exit')
-        # GUI_log = bkTkGUI.LogWindow()
-        # GUI_log.setLogValue(logContent)
-        # GUI_log.update_log
-         #GUI_log = bkTkGUI.ShowLog(logContent)
+        log = log + '\n' + msg
+        #HOLD. Update log in the GUI
         pass
     
 if __name__ == '__main__':

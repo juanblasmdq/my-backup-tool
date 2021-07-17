@@ -1,4 +1,4 @@
-import TkGUI as GUI
+import mainGUI as GUI
 
 
 GUI.AppRun()
