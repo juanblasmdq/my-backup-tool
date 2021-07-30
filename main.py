@@ -2,7 +2,13 @@
 a selected path (either via CLI or config.ini file),
 in a user define backup folder
 
-Full code: https://github.com/juanblasmdq/my-backup-tool/'''
+Full code: https://github.com/juanblasmdq/my-backup-tool/
+
+Pending issues:
+
+Look for "HOLD"
+
+'''
 
 import os
 from datetime import datetime
@@ -118,9 +124,13 @@ def main():
     # Use Graphical user interface for data entry
     else: 
         use_config = 'no'
-        # HOLD
         # Run GUI here
+        # HOLD
+        # Pending... need to run new thread for GUI
         # GUI shall catch all values and return them to continue the script
+        mainGUI.AppRun() 
+        input("Wait..")
+        
         pass 
     
     # ****************************

@@ -1,7 +1,10 @@
 '''A python script to generate a GUI for Python project my-backup-tool
 
 Note: This script is part of Python project my-backup-tool
-Full code: https://github.com/juanblasmdq/my-backup-tool/'''
+Full code: https://github.com/juanblasmdq/my-backup-tool/
+
+** IMPORTANT
+DO NOT RUN THIS MODULE! main.py shall be run to lunch the GUI'''
 
 import tkinter as tk
 from tkinter import font
@@ -15,7 +18,6 @@ class MainApplication(tk.Frame):
             f.configure(underline=True)
             widget.configure(font=f)
             return widget
-            pass
 
         #Parent frame and wrapper
         tk.Frame.__init__(self, parent, *args, **kwargs)
@@ -39,14 +41,14 @@ class MainApplication(tk.Frame):
         self.text1A = tk.Text(self.wrapper,width=colwidth, height=4) #1A = First Answer
         self.text1A.grid(row=1, column=0, columnspan = colspan)
 
-        self.text2Q = tk.Text(self.wrapper,width=colwidth, height=2) # 2Q = First question
+        self.text2Q = tk.Text(self.wrapper,width=colwidth, height=2) # 2Q = Second question
         self.text2Q.grid(row=2, column=0, columnspan = colspan, padx = 30, pady=(30,0))
         self.text2Q['bg'] = self._bgcolor
         self.text2Q['borderwidth']=0
         self.text2Q.insert('1.0', 'FILES PATH:\n(origin of the files to secure):')
         self.text2Q.bind("<Button-1>", lambda e: "break")
 
-        self.text2A = tk.Text(self.wrapper,width=colwidth, height=17) #2A = First Answer
+        self.text2A = tk.Text(self.wrapper,width=colwidth, height=17) #2A = Second Answer
         self.text2A.grid(row=3, column=0, columnspan = colspan)
 
         #Text LOG
@@ -71,8 +73,11 @@ class MainApplication(tk.Frame):
         self.buttonGetDefaults = tk.Button(self.wrapper, text = 'Get default paths', width = 15, command = self.getDefault)
         self.buttonGetDefaults.grid(row=4, column=1, pady=30)
 
-        self.buttonOK = tk.Button(self.wrapper, text = 'Generate backup', width = 15, command = self.getEntiedPaths)
+        self.buttonOK = tk.Button(self.wrapper, text = 'Generate backup', width = 15, command = self.getEntriedPaths)
         self.buttonOK.grid(row=4, column=3, columnspan=colspan, pady=30)
+
+    def showErrorMsg(self,msg,icon):
+        print(messagebox.showwarning('Error',msg,icon=icon))
 
     def getConfig(self):
         '''Development pending'''
@@ -81,11 +86,26 @@ class MainApplication(tk.Frame):
     def getDefault(self):
         '''Development pending'''
         #text = text.get('1.0', 'end')
-        pass
-    def getEntiedPaths(self):
+        pass #
+    def getEntriedPaths(self):
         '''Development pending'''
-        print(messagebox.askyesno('Are you sure?','Continue and run?',icon='warning')) #Returns True / False
+        print(messagebox.askyesno('Confirm','Generate backup?',icon='warning')) #Returns True / False
+        from_path = self.text1A.get('1.0', 'end')
+        to_path = self.text2A.get('1.0', 'end')
 
+        if len(from_path) > 1 and len(to_path)>1: # Text boxes are not empty
+            if from_path[1] == ':' and to_path[1] == ':':
+                print("Development pending!")
+                return from_path, to_path
+            else:
+                msg = "Seems that drive part of path is missing"
+                icon = "warning"
+                self.showErrorMsg(msg,icon)
+        else:
+            msg = "Both paths shall be given"
+            icon = "warning"
+            self.showErrorMsg(msg,icon)   
+        
         #Other messagebox types:
         # .showinfo
         # .showwarning
@@ -100,8 +120,6 @@ class MainApplication(tk.Frame):
         # icons= "info"
         # icons= "question"
         # icons= "warning"
-        
-        #text = text.get('1.0', 'end')
         pass
 
 
@@ -109,11 +127,8 @@ class MainApplication(tk.Frame):
         '''Development pending'''
         pass
 
-
+# AppRun is to be called from main.py
 def AppRun():
     root = tk.Tk()
     MainApplication(root).pack(side="top", fill="both", expand=True)
     root.mainloop()
-
-if __name__ == "__main__":
-    AppRun()
