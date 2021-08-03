@@ -142,11 +142,10 @@ def main():
         from_path = mainGUI.g_from_path
         to_path = mainGUI.g_to_path
         if from_path != "" and to_path !="":
+            print(f"El valor de from_path es: {from_path}")
+            print(f"El valor de to_path es: {to_path}")
+            print("Reasignando variables...")
             break
-
-    print(f"El valor de from_path es: {from_path}")
-    print(f"El valor de to_path es: {to_path}")
-    print("Reasignando variables...")
 
     INPUT_PATH = from_path[:-1]
     BACKUP_PATH = to_path[:-1]
