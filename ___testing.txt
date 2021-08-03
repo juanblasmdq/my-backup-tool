@@ -1,0 +1,2 @@
+C:\_baks
+D:\Python-projects\my-backup-tool

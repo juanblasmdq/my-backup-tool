@@ -10,6 +10,10 @@ import tkinter as tk
 from tkinter import font
 from tkinter import messagebox
 
+#Globals to export to main.py
+g_from_path = ""
+g_to_path = ""
+
 class MainApplication(tk.Frame):
 
     def __init__(self, parent, *args, **kwargs):
@@ -18,6 +22,10 @@ class MainApplication(tk.Frame):
             f.configure(underline=True)
             widget.configure(font=f)
             return widget
+        
+        #Variables to pass from GUI to main
+        from_path = ""
+        to_path = ""
 
         #Parent frame and wrapper
         tk.Frame.__init__(self, parent, *args, **kwargs)
@@ -80,31 +88,37 @@ class MainApplication(tk.Frame):
         print(messagebox.showwarning('Error',msg,icon=icon))
 
     def getConfig(self):
-        '''Development pending'''
-        #text = text.get('1.0', 'end')
+        #print(self.from_path, self.to_path)
+        '''HOLD. Development pending'''
         pass
     def getDefault(self):
-        '''Development pending'''
-        #text = text.get('1.0', 'end')
-        pass #
+        '''HOLD. Development pending'''
+        pass
     def getEntriedPaths(self):
-        '''Development pending'''
-        print(messagebox.askyesno('Confirm','Generate backup?',icon='warning')) #Returns True / False
-        from_path = self.text1A.get('1.0', 'end')
-        to_path = self.text2A.get('1.0', 'end')
+        '''HOLD. Development pending'''
+        cont = messagebox.askyesno('Confirm','Generate backup?',icon='warning') #Returns True / False
 
-        if len(from_path) > 1 and len(to_path)>1: # Text boxes are not empty
-            if from_path[1] == ':' and to_path[1] == ':':
-                print("Development pending!")
-                return from_path, to_path
+        if cont == True:
+            topath = self.text1A.get('1.0', 'end')
+            frompath = self.text2A.get('1.0', 'end')
+
+            if len(frompath) > 1 and len(topath)>1: # Text boxes are not empty
+                if frompath[1] == ':' and topath[1] == ':':
+                    # self.from_path = frompath
+                    # self.to_path = topath
+                    global g_from_path
+                    global g_to_path
+                    g_from_path = frompath
+                    g_to_path =topath
+
+                else:
+                    msg = "Seems that drive part of path is missing"
+                    icon = "warning"
+                    self.showErrorMsg(msg,icon)
             else:
-                msg = "Seems that drive part of path is missing"
+                msg = "Both paths shall be given"
                 icon = "warning"
-                self.showErrorMsg(msg,icon)
-        else:
-            msg = "Both paths shall be given"
-            icon = "warning"
-            self.showErrorMsg(msg,icon)   
+                self.showErrorMsg(msg,icon)   
         
         #Other messagebox types:
         # .showinfo
@@ -121,7 +135,6 @@ class MainApplication(tk.Frame):
         # icons= "question"
         # icons= "warning"
         pass
-
 
     def updateLog(self):
         '''Development pending'''

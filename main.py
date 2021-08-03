@@ -15,6 +15,8 @@ from datetime import datetime
 import zipfile
 from pathlib import Path
 from configparser import ConfigParser
+import threading
+import time
 
 import mainGUI #project-specific-module TkGUI.py
 
@@ -86,6 +88,9 @@ def get_config(section, lookup):
     config.read('config.ini')
     return config[section][lookup]
 
+def launch_GUI():
+    mainGUI.AppRun()
+
 def main():
     # Variable early assignment to avoid errors until GUI release. HOLD. Shall be removed later
     INPUT_PATH = ''
@@ -124,22 +129,34 @@ def main():
     # Use Graphical user interface for data entry
     else: 
         use_config = 'no'
-        # Run GUI here
         # HOLD
-        # Pending... need to run new thread for GUI
-        # GUI shall catch all values and return them to continue the script
-        mainGUI.AppRun() 
-        input("Wait..")
-        
-        pass 
+        x = threading.Thread(target=launch_GUI, args=())
+        x.start()
     
     # ****************************
     #     MAIN LOOP EXECUTION     
     # ****************************
+    while True:
+        print("Waiting paths...")
+        time.sleep(1)
+        from_path = mainGUI.g_from_path
+        to_path = mainGUI.g_to_path
+        if from_path != "" and to_path !="":
+            break
+
+    print(f"El valor de from_path es: {from_path}")
+    print(f"El valor de to_path es: {to_path}")
+    print("Reasignando variables...")
+
+    INPUT_PATH = from_path[:-1]
+    BACKUP_PATH = to_path[:-1]
+
     INPUT_PATH=INPUT_PATH.split(',') # In case multiple inputs where entried
     for pth in INPUT_PATH:
+        print(pth)
         pth = r'{}'.format(pth).strip()
         msg = '\n>> !WORKING ON PATH {}'.format(pth)
+        print(msg)
 
         if CLI:
             print(msg)
