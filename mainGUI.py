@@ -26,6 +26,7 @@ class MainApplication(tk.Frame):
         #Variables to pass from GUI to main
         from_path = ""
         to_path = ""
+        self.msgx = ""
 
         #Parent frame and wrapper
         tk.Frame.__init__(self, parent, *args, **kwargs)
@@ -69,7 +70,7 @@ class MainApplication(tk.Frame):
         UnderlinedWidget(self,self.textLogL)
         self.textLogL.bind("<Button-1>", lambda e: "break")
         
-        self.textLogO = tk.Text(self.wrapper,width=colwidth, height=25) #LogO = First Answer
+        self.textLogO = tk.Text(self.wrapper,width=colwidth, height=25) #LogO = Log Output
         self.textLogO['bg'] = 'azure'
         self.textLogO.grid(row=1, column=3, columnspan = colspan, rowspan=3)
 
@@ -136,9 +137,11 @@ class MainApplication(tk.Frame):
         # icons= "warning"
         pass
 
-    def updateLog(self):
-        '''Development pending'''
-        pass
+    def updateLog(self,widget):
+        #HOLD!!!
+        self.textLogO.insert('end', "jueeee")
+        self.msgx = self.msgx + '\n'
+        self.textLogO.insert('end', self.msgx)
 
 # AppRun is to be called from main.py
 def AppRun():

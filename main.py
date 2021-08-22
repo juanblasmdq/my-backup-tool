@@ -18,7 +18,7 @@ from configparser import ConfigParser
 import threading
 import time
 
-import mainGUI #project-specific-module TkGUI.py
+import mainGUI #project-specific-module
 
 __copyright__   = 'My-backup-tool'
 __version__     = 'beta'
@@ -160,9 +160,8 @@ def main():
         if CLI:
             print(msg)
         else:
-            log = log + '\n' + msg
-            #HOLD. Update log in the GUI
-            pass
+            # mainGUI.MainApplication().updateLog(msg)
+            mainGUI.MainApplication.updateLog(msg)
         
         # Make dir BACKUP_PATH if not exist
         Path(BACKUP_PATH).mkdir(parents=True, exist_ok=True)
@@ -184,9 +183,7 @@ def main():
         if CLI:
             print(msg)
         else:
-            log = log + '\n' + msg
-            #HOLD. Update log in the GUI
-            pass
+            mainGUI.App.updateLog(msg)
     
     #End of main loop. Write end msg
     msg = '\n>> END OF PROCESS!. You can exit now'
@@ -194,9 +191,7 @@ def main():
     if CLI:
         print(msg)
     else:
-        log = log + '\n' + msg
-        #HOLD. Update log in the GUI
-        pass
+        mainGUI.MainApplication.updateLog(msg)
     
 if __name__ == '__main__':
     main()
